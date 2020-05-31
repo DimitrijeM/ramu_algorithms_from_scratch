@@ -1,0 +1,8 @@
+
+.idea/*
+data/
+*.pyc
+env/
+ipython.html
+.DS_Store
+
