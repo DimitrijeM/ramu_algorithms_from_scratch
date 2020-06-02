@@ -77,9 +77,9 @@ class NaiveBayesClassifier:
 
     def point_predict(self, point_row):
         prediction_proba = self.prediction_func(point_row)
-        point_row['prediction'] = max(prediction, key=lambda x: prediction[x])
+        point_row['prediction'] = max(prediction_proba, key=lambda x: prediction[x])
         for value in data[target_class].unique():
-            data_new.loc[i, f"{target_class}={value}"] = prediction[value]
+            data_new.loc[i, f"{target_class}={value}"] = prediction_proba[value]
         return point_row
 
     def predict(self, x):
