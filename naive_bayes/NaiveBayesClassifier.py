@@ -5,8 +5,7 @@ from scipy.stats import norm
 
 
 class NaiveBayesClassifier:
-    def __init__(self, target_class, proba_type='log', pseudo_count=0):
-        self.target_class = target_class
+    def __init__(self, proba_type='log', pseudo_count=0):
         self.pseudo_count = pseudo_count
         self.prediction_func = self.point_predict_proba_log if proba_type == 'log' else self.point_predict_proba
         self.model = {}
@@ -75,14 +74,14 @@ class NaiveBayesClassifier:
             prediction[class_value] = cumulative_proba
         return prediction
 
-    def point_predict(self, point_row):
+    def point_predict(self, point_row, target_class):
         prediction_proba = self.prediction_func(point_row)
         point_row['prediction'] = max(prediction_proba, key=lambda x: prediction[x])
         for value in data[target_class].unique():
             data_new.loc[i, f"{target_class}={value}"] = prediction_proba[value]
         return point_row
 
-    def predict(self, x):
+    def predict(self, x, target_class):
         x_ = x.copy()
         for i in range(len(x_)):
             point = x_.loc[i]
@@ -106,9 +105,10 @@ if __name__ == "__main__":
     x = data.drop(target_class, axis=1)
     y = data[target_class]
 
-    model_nb = NaiveBayesClassifier(target_class, 'log', 1e-3)
+    # model_nb = NaiveBayesClassifier()
+    model_nb = NaiveBayesClassifier('log', 1e-3)
     model_nb.fit(x, y)
-    data_new = model_nb.predict(data)
+    data_new = model_nb.predict(data, target_class)
     print(data_new)
 
     data_new['matched'] = data_new[target_class] == data_new['prediction']

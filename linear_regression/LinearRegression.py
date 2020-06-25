@@ -12,7 +12,13 @@ class LinearRegression:
 		self.x_mean = None
 		self.x_std = None
 
-		self.fit = self.__fit_with_stochastic_gd if gradient_type == 'SGD' else self.__fit_with_gradient_descent
+		if gradient_type == "SGD":
+			self.fit = self.__fit_with_stochastic_gd
+		elif gradient_type == "analytical":
+			self.fit = self.__fit_analytical
+		else:
+			self.fit = self.__fit_with_gradient_descent
+
 
 
 	@staticmethod
@@ -117,7 +123,6 @@ class LinearRegression:
 			# 	self.learning_rate = self.adapt_learning_rate_by_factor(x, y, self.w, prior_w,
 			# 															self.learning_rate, learning_rate_factor)
 
-
 			mean_squared_error = LinearRegression.calculate_mean_squared_error(errors, error_regularizator)
 			gradients_norm = abs(gradients).sum()
 
@@ -157,11 +162,24 @@ class LinearRegression:
 				if gradients_norm < gradients_to_stop or mean_square_error < mse_to_stop:
 					break
 
+	# def __fit_analytical(self, x, y, epochs, log_epoch=1000, gradients_to_stop=0, mse_to_stop=0,
+	# 					 adapt_learning_rate=None, learning_rate_factor=1):
+	# 	x = LinearRegression.get_np_array(x)
+	# 	y = LinearRegression.get_np_array(y)
+	#
+	# 	self.x_mean = np.mean(x, axis=0)
+	# 	self.x_std = np.std(x, axis=0)
+	# 	x = self.normalize(x)
+	# 	x = LinearRegression.add_intercept(x)
+	# 	zero = x.T.dot(x)
+	# 	first = zero**(-1)
+	# 	self.w = first.dot(x.T.dot(y))
+
 	def predict(self, x):
 		x = LinearRegression.get_np_array(x)
 		x = self.normalize(x)
 		x = self.add_intercept(x)
-		return x.dot(self.w.T)
+		return x.dot(self.w)
 
 
 if __name__ == "__main__":
@@ -179,8 +197,8 @@ if __name__ == "__main__":
 	# model_lr = LinearRegression(0.01, regularization_param=1e-3, gradient_type='SGD')
 	# model_lr.fit(x, y, epochs=int(1e3), log_epoch=100, gradients_to_stop=1e-6)
 
-	model_lr = LinearRegression(0.1, regularization_param=1e-2, gradient_type='batch')
-	model_lr.fit(x, y, epochs=int(1e4), log_epoch=100, gradients_to_stop=1e-6, adapt_learning_rate='cauchy')
+	model_lr = LinearRegression(0.1, regularization_param=1e-2, gradient_type='analytical')
+	model_lr.fit(x, y, epochs=1)
 	prediction = model_lr.predict(x)
 	data['predicted'] = prediction
 	print(data)
