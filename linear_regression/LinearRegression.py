@@ -3,7 +3,7 @@ import numpy as np
 import sys
 
 class LinearRegression:
-	def __init__(self, learning_rate=0.01, regularization_param=0.0, gradient_type='base'):
+	def __init__(self, learning_rate=0.01, regularization_param=0.0, gradient_type='batch'):
 		self.learning_rate = learning_rate
 		self.regularization_param = regularization_param
 		self.gradient_type = gradient_type
@@ -179,7 +179,7 @@ class LinearRegression:
 		x = LinearRegression.get_np_array(x)
 		x = self.normalize(x)
 		x = self.add_intercept(x)
-		return x.dot(self.w)
+		return x.dot(self.w.T)
 
 
 if __name__ == "__main__":
@@ -197,8 +197,8 @@ if __name__ == "__main__":
 	# model_lr = LinearRegression(0.01, regularization_param=1e-3, gradient_type='SGD')
 	# model_lr.fit(x, y, epochs=int(1e3), log_epoch=100, gradients_to_stop=1e-6)
 
-	model_lr = LinearRegression(0.1, regularization_param=1e-2, gradient_type='analytical')
-	model_lr.fit(x, y, epochs=1)
+	model_lr = LinearRegression(0.1, regularization_param=1e-2, gradient_type='batch')
+	model_lr.fit(x, y, epochs=int(1e4))
 	prediction = model_lr.predict(x)
 	data['predicted'] = prediction
 	print(data)
