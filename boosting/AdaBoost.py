@@ -29,7 +29,8 @@ class AdaBoost:
 
             model = random.choice(self.base_models)()
             model = model.fit(x, y, sample_weight=instance_weights)
-            error = (model.predict(x)-y).abs()
+            y_predicted = model.predict(x)
+            error = np.logical_not(y_predicted == y).astype('int')
             total_error = (error*instance_weights).sum()
             if total_error != 0:
                 base_model_weight = self.learning_rate * math.log((1-total_error)/total_error)
@@ -61,7 +62,7 @@ if __name__ == "__main__":
 
     x = pd.get_dummies(x)
     # model = AdaBoost()
-    model = AdaBoost(learning_rate=0.1, ensemble_size=10, base_model=[GaussianNB, DecisionTreeClassifier])
+    model = AdaBoost(learning_rate=0.5, ensemble_size=10, base_model=[GaussianNB])
     model.fit(x, y)
     data['predicted'] = model.predict(x)
     print(data.head())
